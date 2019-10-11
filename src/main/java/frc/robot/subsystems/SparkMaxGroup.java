@@ -18,6 +18,7 @@ public class SparkMaxGroup implements SpeedController {
     private static CANPIDController s_pidController;
     private CANEncoder m_encoder;
     private CANSparkMax [] slaves;
+    private CANEncoder [] slaveEncoders;
     private double kP;
     private double kI;
     private double kD;
@@ -33,13 +34,15 @@ public class SparkMaxGroup implements SpeedController {
         
         this.slaves = slaves;
         this.master = master;
+        slaveEncoders = new CANEncoder[slaves.length];
         m_encoder = master.getEncoder();
         master.restoreFactoryDefaults();
         m_pidController = master.getPIDController();
-        for(CANSparkMax slave : slaves) {
-            slave.follow(master);
-            slave.restoreFactoryDefaults();
-            s_pidController = slave.getPIDController();
+        for(int i = 0; i < slaves.length; i++) {
+            this.slaves[i].follow(master);
+            slaveEncoders[i] = this.slaves[i].getEncoder();
+            this.slaves[i].restoreFactoryDefaults();
+            s_pidController = this.slaves[i].getPIDController();
         }
     }
 
