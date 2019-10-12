@@ -38,11 +38,9 @@ public class SparkMaxGroup implements SpeedController {
         m_encoder = master.getEncoder();
         master.restoreFactoryDefaults();
         m_pidController = master.getPIDController();
-        for(int i = 0; i < slaves.length; i++) {
-            this.slaves[i].follow(master);
-            slaveEncoders[i] = this.slaves[i].getEncoder();
-            this.slaves[i].restoreFactoryDefaults();
-            s_pidController = this.slaves[i].getPIDController();
+        for(CANSparkMax slave : slaves) {
+            slave.restoreFactoryDefaults();
+            slave.follow(master);
         }
     }
 
