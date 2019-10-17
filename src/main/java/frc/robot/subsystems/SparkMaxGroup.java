@@ -20,7 +20,6 @@ public class SparkMaxGroup implements SpeedController {
     private static CANPIDController s_pidController;
     private CANEncoder m_encoder;
     private CANSparkMax [] slaves;
-    private CANEncoder [] slaveEncoders;
     private double kP;
     private double kI;
     private double kD;
@@ -36,7 +35,6 @@ public class SparkMaxGroup implements SpeedController {
         
         this.slaves = slaves;
         this.master = master;
-        slaveEncoders = new CANEncoder[slaves.length];
         m_encoder = master.getEncoder();
         master.restoreFactoryDefaults();
         m_pidController = master.getPIDController();
@@ -95,7 +93,6 @@ public class SparkMaxGroup implements SpeedController {
     public void setInverted(boolean isInverted) {
         master.setInverted(isInverted);
         for(CANSparkMax slave : slaves) {
-            //slave.follow(master);
             slave.setInverted(isInverted);
         }
     }
