@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.SpeedController;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
 import com.revrobotics.CANEncoder;
@@ -8,6 +9,7 @@ import com.revrobotics.CANPIDController;
 import edu.wpi.first.wpilibj.Joystick;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 
 import java.util.logging.Logger;
 
@@ -42,6 +44,13 @@ public class SparkMaxGroup implements SpeedController {
             slave.restoreFactoryDefaults();
             slave.follow(master);
         }
+        
+        m_pidController.setP(Constants.kGains_Velocity.kP);
+        m_pidController.setI(Constants.kGains_Velocity.kI);
+        m_pidController.setD(Constants.kGains_Velocity.kD);
+        m_pidController.setIZone(Constants.kGains_Velocity.kD);
+        m_pidController.setFF(Constants.kGains_Velocity.kD);
+        m_pidController.setOutputRange(Constants.kGains_Velocity.kMinOutput, Constants.kGains_Velocity.kMaxOutput);
     }
 
     /**
@@ -50,20 +59,13 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public void pidWrite(double output) {
-        kP = 5; 
-        kI = 5;
-        kD = 5; 
-        maxRPM = 5600;
-        m_pidController.setP(kP);
-        m_pidController.setI(kI);
-        m_pidController.setD(kD);
     }
     
     public static int getRpm() {
         return maxRPM;
     }
 
-    public static CANPIDController getpidController(){
+    public CANPIDController getpidController(){
         return m_pidController;
     }
     /**
@@ -73,10 +75,6 @@ public class SparkMaxGroup implements SpeedController {
     @Override
     public void set(double speed) {
         master.set(speed);
-        for(CANSparkMax slave : slaves) {
-            //slave.follow(master);
-            //slave.set(speed);
-        }
     }
 
 
@@ -118,8 +116,7 @@ public class SparkMaxGroup implements SpeedController {
     public void disable() {
         master.disable();
         for(CANSparkMax slave : slaves) {
-            //slave.follow(master);
-            slave.disable();;
+            slave.disable();
         }
     }
 
@@ -130,7 +127,6 @@ public class SparkMaxGroup implements SpeedController {
     public void stopMotor() {
         master.stopMotor();
         for(CANSparkMax slave : slaves) {
-            //slave.follow(master);
             slave.stopMotor();
         }
     }

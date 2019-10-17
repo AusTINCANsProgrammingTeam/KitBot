@@ -23,7 +23,7 @@ public class DriveCommand extends Command {
     public Joystick joystick = new Joystick(RobotMap.joystick);
   public DriveCommand() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.m_subsystem);
+    requires(Robot.driveSubsystem);
   }
 
   // Called just before this Command runs the first time
@@ -34,9 +34,6 @@ public class DriveCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-      double setPoint = joystick.getRawAxis(1)*SparkMaxGroup.getRpm();
-      SparkMaxGroup.getpidController().setReference(setPoint, ControlType.kVelocity);
-      //LOGGER.warning("" + setPoint);
       Robot.driveSubsystem.arcadeDrive(joystick.getRawAxis(1), joystick.getRawAxis(2));
   }
 

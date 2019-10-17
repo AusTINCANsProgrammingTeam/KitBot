@@ -14,13 +14,14 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.robot.commands.DriveCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunVelocity;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.RobotMap;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+
 import java.util.logging.*;
 
 
@@ -32,7 +33,6 @@ import java.util.logging.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static OI m_oi;
   public static DriveSubsystem driveSubsystem;
   private Joystick joystick;
@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
   //private static final int rightDeviceID = 2;
   private DifferentialDrive m_myRobot;
   private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
+
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -52,8 +53,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     driveSubsystem = new DriveSubsystem();
     m_oi = new OI();
-    m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
+
+    m_oi.buttonOne.toggleWhenPressed(new RunVelocity(500, 80));
   }
 
   /**
@@ -66,7 +67,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    SmartDashboard.putNumber("Left Velocity", -1 * driveSubsystem.leftVelocity());    
+    SmartDashboard.putNumber("Right Velocity", 1 * driveSubsystem.rightVelocity());
   }
 
   /**

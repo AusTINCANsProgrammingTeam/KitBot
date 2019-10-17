@@ -23,8 +23,4 @@ public class RobotMap {
    public final static int RIGHTMOTOR_2 = 4;
    //public final static int RIGHTMOTOR_3 = 3;
    public final static int joystick = 0;
-  // If you are using multiple modules, make sure to define both the port
-  // number and the module. For example you with a rangefinder:
-  // public static int rangefinderPort = 1;
-  // public static int rangefinderModule = 1;
 }
