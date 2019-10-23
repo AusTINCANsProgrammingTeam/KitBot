@@ -17,7 +17,6 @@ public class SparkMaxGroup implements SpeedController {
     private static final Logger LOGGER = Logger.getLogger(SparkMaxGroup.class.getName());
     private CANSparkMax master;
     private static CANPIDController m_pidController;
-    private static CANPIDController s_pidController;
     private CANEncoder m_encoder;
     private CANSparkMax [] slaves;
     private double kP;
@@ -49,6 +48,11 @@ public class SparkMaxGroup implements SpeedController {
         m_pidController.setIZone(Constants.kGains_Velocity.kD);
         m_pidController.setFF(Constants.kGains_Velocity.kD);
         m_pidController.setOutputRange(Constants.kGains_Velocity.kMinOutput, Constants.kGains_Velocity.kMaxOutput);
+
+        master.burnFlash();
+        for (CANSparkMax slave : slaves) {
+            slave.burnFlash();
+        }
     }
 
     /**
