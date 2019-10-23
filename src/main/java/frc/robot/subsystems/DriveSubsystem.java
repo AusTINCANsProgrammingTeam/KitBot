@@ -51,7 +51,7 @@ public class DriveSubsystem extends Subsystem{
 
     public void setPidVelocitySetpoint(double setpoint)
     {
-        leftSparkMaxes.getpidController().setReference(.1, ControlType.kVelocity);
+        leftSparkMaxes.getpidController().setReference(.1, ControlType.kDutyCycle);
     }
 
     public double leftVelocity()
