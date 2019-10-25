@@ -13,7 +13,7 @@ public class Constants {
   public static final int kEncoderUnitsPerRotation = 51711;
   public static final int kTimeOutMs = 10;
   public static final double kNeutralDeadband = 0.001;
-  public static final double kMaxRpms = 5600;
+  public static final double kMaxRpms = 2500;
 
   public final static Gains kGains_Velocity 
   = new Gains(5e-5, 1e-6, 0.0, 0, 1, -1);
