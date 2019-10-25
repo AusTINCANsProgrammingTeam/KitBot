@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.SpeedController;
 import frc.robot.Constants;
+import frc.robot.Gains;
 import frc.robot.Robot;
 
 import com.revrobotics.CANEncoder;
@@ -10,20 +11,16 @@ import edu.wpi.first.wpilibj.Joystick;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.SparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import java.util.logging.Logger;
 
 public class SparkMaxGroup implements SpeedController {
-    private static final Logger LOGGER = Logger.getLogger(SparkMaxGroup.class.getName());
-    private CANSparkMax master;
-    private static CANPIDController m_pidController;
-    private static CANPIDController s_pidController;
-    private CANEncoder m_encoder;
-    private CANSparkMax [] slaves;
-    private double kP;
-    private double kI;
-    private double kD;
-    public static int maxRPM = 5600;
+    private CANSparkMax mMaster;
+    private static CANPIDController mPidController;
+    private CANEncoder mEncoder;
+    private CANSparkMax [] mSlaves;
 
     /**
      *
@@ -31,24 +28,78 @@ public class SparkMaxGroup implements SpeedController {
      * @param master the master motor. All other motors will follow this one.
      * @param slaves the slave motors. Follow the master motor.
      */
-    public SparkMaxGroup(CANSparkMax master, CANSparkMax... slaves) {
-        
-        this.slaves = slaves;
-        this.master = master;
-        m_encoder = master.getEncoder();
+    public SparkMaxGroup(Gains pidGains, CANSparkMax master, CANSparkMax... slaves) 
+    {
+        //Assign the array of incoming slaves to this class's slaves.        
+        mSlaves = slaves;
+        //Assign the incoming master to this class's Master
+        mMaster = master;
+        //Create an encoder for the spark max group. The Motors are joined mechanically
+        //to the gearbox so they spin in sync. Which means we only need one encoder.
+        mEncoder = master.getEncoder();
+
+        //Reset the factory settings to clear any incorrect configuration values
         master.restoreFactoryDefaults();
-        m_pidController = master.getPIDController();
+
+        //Create the single pid controller that all spark maxes will use.
+        mPidController = master.getPIDController();
+
+        //Reset each configuration on the slaves, and set them to follow the master
         for(CANSparkMax slave : slaves) {
             slave.restoreFactoryDefaults();
             slave.follow(master);
         }
         
-        m_pidController.setP(Constants.kGains_Velocity.kP);
-        m_pidController.setI(Constants.kGains_Velocity.kI);
-        m_pidController.setD(Constants.kGains_Velocity.kD);
-        m_pidController.setIZone(Constants.kGains_Velocity.kD);
-        m_pidController.setFF(Constants.kGains_Velocity.kD);
-        m_pidController.setOutputRange(Constants.kGains_Velocity.kMinOutput, Constants.kGains_Velocity.kMaxOutput);
+        //Set the gains for the pid controller
+        mPidController.setP(pidGains.kP);
+        mPidController.setI(pidGains.kI);
+        mPidController.setD(pidGains.kD);
+        mPidController.setIZone(pidGains.kD);
+        mPidController.setFF(pidGains.kD);
+        mPidController.setOutputRange(pidGains.kMinOutput, pidGains.kMaxOutput);
+        
+        setBrakeMode(false);
+    }
+
+    /**
+     *Set the velocity setpoint of the pid controller 
+     */
+    public void setVelocity(double setPoint)
+    {
+        mPidController.setReference(setPoint, ControlType.kVelocity);
+    }
+
+    public double getVelocity()
+    {
+        return mEncoder.getVelocity();
+    }
+
+    /**
+     * Set all of the spark maxes to the specified idle mode
+     * @param brakeMode if the spark max group should be set to brake mode
+     */
+    public void setBrakeMode(boolean brakeMode)
+    {
+        //if (brakeMode)
+        //{
+        //  mode = IdleMode.kCoast;
+        //}
+        //else
+        //{
+        //  mode = IdleMode.kBrake;
+        //}
+        // ? Is the ternary opperator the below statement is equivlent to the above if else
+        // If the condition is true it will assign the value before the semi colon to mode.
+        // If the condition is false it will assign the value after the semi colon to mode.
+        //              Conditon to check
+        //                          if (true)         if (false)
+        IdleMode mode = brakeMode ? IdleMode.kBrake : IdleMode.kCoast;
+        //Set the master and slave to specified mode
+        mMaster.setIdleMode(mode);
+        for (CANSparkMax slave : mSlaves)
+        {
+            slave.setIdleMode(mode);
+        }
     }
 
     /**
@@ -57,22 +108,16 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public void pidWrite(double output) {
-    }
-    
-    public static int getRpm() {
-        return maxRPM;
+        mMaster.set(output);
     }
 
-    public CANPIDController getpidController(){
-        return m_pidController;
-    }
     /**
      * Common interface for setting the speed of a speed controller.
      * @param speed the speed to set. Value should be between -1.0 and 1.0.
      */
     @Override
     public void set(double speed) {
-        master.set(speed);
+        mMaster.set(speed);
     }
 
 
@@ -82,7 +127,7 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public double get() {
-        return master.get();
+        return mMaster.get();
     }
 
     /**
@@ -91,8 +136,8 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public void setInverted(boolean isInverted) {
-        master.setInverted(isInverted);
-        for(CANSparkMax slave : slaves) {
+        mMaster.setInverted(isInverted);
+        for(CANSparkMax slave : mSlaves) {
             slave.setInverted(isInverted);
         }
     }
@@ -103,7 +148,7 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public boolean getInverted() {
-        return master.getInverted();
+        return mMaster.getInverted();
     }
 
     /**
@@ -111,8 +156,8 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public void disable() {
-        master.disable();
-        for(CANSparkMax slave : slaves) {
+        mMaster.disable();
+        for(CANSparkMax slave : mSlaves) {
             slave.disable();
         }
     }
@@ -122,8 +167,8 @@ public class SparkMaxGroup implements SpeedController {
      */
     @Override
     public void stopMotor() {
-        master.stopMotor();
-        for(CANSparkMax slave : slaves) {
+        mMaster.stopMotor();
+        for(CANSparkMax slave : mSlaves) {
             slave.stopMotor();
         }
     }
