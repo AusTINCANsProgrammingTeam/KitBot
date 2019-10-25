@@ -35,20 +35,20 @@ public class SparkMaxGroup implements SpeedController {
         
         this.slaves = slaves;
         this.master = master;
-        //m_encoder = master.getEncoder();
-        //master.restoreFactoryDefaults();
-       // m_pidController = master.getPIDController();
+        m_encoder = master.getEncoder();
+        master.restoreFactoryDefaults();
+        m_pidController = master.getPIDController();
         for(CANSparkMax slave : slaves) {
             slave.restoreFactoryDefaults();
             slave.follow(master);
         }
         
-        //m_pidController.setP(Constants.kGains_Velocity.kP);
-        //m_pidController.setI(Constants.kGains_Velocity.kI);
-        //m_pidController.setD(Constants.kGains_Velocity.kD);
-        //m_pidController.setIZone(Constants.kGains_Velocity.kD);
-        //m_pidController.setFF(Constants.kGains_Velocity.kD);
-        //m_pidController.setOutputRange(Constants.kGains_Velocity.kMinOutput, Constants.kGains_Velocity.kMaxOutput);
+        m_pidController.setP(Constants.kGains_Velocity.kP);
+        m_pidController.setI(Constants.kGains_Velocity.kI);
+        m_pidController.setD(Constants.kGains_Velocity.kD);
+        m_pidController.setIZone(Constants.kGains_Velocity.kD);
+        m_pidController.setFF(Constants.kGains_Velocity.kD);
+        m_pidController.setOutputRange(Constants.kGains_Velocity.kMinOutput, Constants.kGains_Velocity.kMaxOutput);
     }
 
     /**
@@ -63,6 +63,9 @@ public class SparkMaxGroup implements SpeedController {
         return maxRPM;
     }
 
+    public CANPIDController getpidController(){
+        return m_pidController;
+    }
     /**
      * Common interface for setting the speed of a speed controller.
      * @param speed the speed to set. Value should be between -1.0 and 1.0.
