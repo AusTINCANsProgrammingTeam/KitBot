@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -35,10 +36,6 @@ import java.util.logging.*;
 public class Robot extends TimedRobot {
   public static OI m_oi;
   public static DriveSubsystem driveSubsystem;
-  private Joystick joystick;
-  //private static final int leftDeviceID = 1; 
-  //private static final int rightDeviceID = 2;
-  private DifferentialDrive m_myRobot;
   private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
 
 
@@ -51,10 +48,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
+
     driveSubsystem = new DriveSubsystem();
     m_oi = new OI();
 
-    m_oi.buttonOne.toggleWhenPressed(new RunVelocity(500, 80));
+    //m_oi.buttonOne.toggleWhenPressed(new RunVelocity(500, 1));
   }
 
   /**
@@ -67,8 +66,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Velocity", -1 * driveSubsystem.leftVelocity());    
-    SmartDashboard.putNumber("Right Velocity", 1 * driveSubsystem.rightVelocity());
+    SmartDashboard.putNumber("Left Velocity", driveSubsystem.leftVelocity());    
+    SmartDashboard.putNumber("Right Velocity", -1 * driveSubsystem.rightVelocity());
   }
 
   /**
@@ -123,7 +122,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Scheduler.getInstance().add(new DriveCommand());
+    //Scheduler.getInstance().add(new DriveCommand());
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -131,6 +130,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
   }
 
   /**
@@ -139,6 +139,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    
+    driveSubsystem.setPidVelocitySetpoint(1000);
   }
 
   /**
