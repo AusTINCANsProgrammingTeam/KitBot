@@ -18,13 +18,11 @@ public class RunVelocity extends Command {
   private Timer timer;
 
   public RunVelocity(double velRPM, int timeToRunMs) {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
     timeToRun = timeToRunMs;
     velocity = velRPM;
     timer = new Timer();
     timer.start();
-    requires(Robot.driveSubsystem);
+    requires(Robot.mDriveSubsystem);
   }
 
   // Called just before this Command runs the first time
@@ -35,7 +33,7 @@ public class RunVelocity extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.driveSubsystem.setPidVelocitySetpoint(velocity);
+    Robot.mDriveSubsystem.setLeftVelocity(velocity);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -47,7 +45,8 @@ public class RunVelocity extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.driveSubsystem.setPidVelocitySetpoint(0);
+    //Zero the velocity
+    Robot.mDriveSubsystem.setLeftVelocity(0);
   }
 
   // Called when another command which requires one or more of the same

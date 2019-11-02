@@ -33,17 +33,11 @@ import java.util.logging.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static OI m_oi;
-  public static DriveSubsystem driveSubsystem;
-  private Joystick joystick;
-  //private static final int leftDeviceID = 1; 
-  //private static final int rightDeviceID = 2;
-  private DifferentialDrive m_myRobot;
-  private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
+  public static OI mOI;
+  public static DriveSubsystem mDriveSubsystem;
 
-
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  Command mAutonomousCommand;
+  SendableChooser<Command> mChooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be
@@ -51,10 +45,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    driveSubsystem = new DriveSubsystem();
-    m_oi = new OI();
+    mDriveSubsystem = new DriveSubsystem();
+    mOI = new OI();
 
-    m_oi.buttonOne.toggleWhenPressed(new RunVelocity(500, 80));
+    //Set the drive base to be in closed loop mode     
+    mDriveSubsystem.setClosedLoopControl(true);
+
+    //Bind the joy stick buttons to the respective commands
+    mOI.buttonOne.toggleWhenPressed(new RunVelocity(1000, 5));
   }
 
   /**
@@ -67,8 +65,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Velocity", -1 * driveSubsystem.leftVelocity());    
-    SmartDashboard.putNumber("Right Velocity", 1 * driveSubsystem.rightVelocity());
+    SmartDashboard.putNumber("Left Velocity", -1 * mDriveSubsystem.leftVelocity());    
+    SmartDashboard.putNumber("Right Velocity", 1 * mDriveSubsystem.rightVelocity());
   }
 
   /**
@@ -98,7 +96,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
+    mAutonomousCommand = mChooser.getSelected();
 
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
@@ -108,8 +106,8 @@ public class Robot extends TimedRobot {
      */
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.start();
+    if (mAutonomousCommand != null) {
+      mAutonomousCommand.start();
     }
   }
 
@@ -128,8 +126,8 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (mAutonomousCommand != null) {
+      mAutonomousCommand.cancel();
     }
   }
 
