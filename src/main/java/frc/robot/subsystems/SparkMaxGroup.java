@@ -24,7 +24,7 @@ public class SparkMaxGroup implements SpeedController {
 
     /**
      *
-     * Creates a new TalonSRXGroup from a set of WPI_TalonSRX instances. The first instance is used as the master.
+     * Creates a new SparkmaxGroup from a set of Spark maxes instances. The first instance is used as the master.
      * @param master the master motor. All other motors will follow this one.
      * @param slaves the slave motors. Follow the master motor.
      */
