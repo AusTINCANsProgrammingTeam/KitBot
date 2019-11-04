@@ -21,19 +21,20 @@ public class RunVelocity extends Command {
     timeToRun = timeToRunMs;
     velocity = velRPM;
     timer = new Timer();
-    timer.start();
     requires(Robot.mDriveSubsystem);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    timer.reset();
+    timer.start();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.mDriveSubsystem.setLeftVelocity(velocity);
+    Robot.mDriveSubsystem.setPidVelocitySetpoint(velocity);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -46,7 +47,7 @@ public class RunVelocity extends Command {
   @Override
   protected void end() {
     //Zero the velocity
-    Robot.mDriveSubsystem.setLeftVelocity(0);
+    Robot.mDriveSubsystem.setPidVelocitySetpoint(0);
   }
 
   // Called when another command which requires one or more of the same

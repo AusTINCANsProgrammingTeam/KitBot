@@ -19,109 +19,105 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANError;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import java.util.logging.*;
 
 public class DriveSubsystem extends Subsystem{
-    private DifferentialDrive differentialDrive;
-    private CANSparkMax mLeftSparkMax1;
-    private CANSparkMax mLeftSparkMax2;
-    private CANSparkMax mRightSparkMax1;
-    private CANSparkMax mRightSparkMax2;
+    private static final Logger LOGGER = Logger.getLogger(DriveSubsystem.class.getName());
 
-    private SparkMaxGroup mLeftSparkMaxGroup;
-    private SparkMaxGroup mRightSparkMaxGroup;
-    private boolean mClosedLoopControl = false;
+    private CANSparkMax mLeft1;
+    private CANSparkMax mLeft2;
+    private CANPIDController m_pidController;
+    private CANEncoder m_encoder;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
 
-    public DriveSubsystem()
-    {   
-        mLeftSparkMax1 = new CANSparkMax(RobotMap.LEFTMOTOR_1, MotorType.kBrushless);
-        mLeftSparkMax2 = new CANSparkMax(RobotMap.LEFTMOTOR_2, MotorType.kBrushless);
-        mRightSparkMax1 = new CANSparkMax(RobotMap.RIGHTMOTOR_1, MotorType.kBrushless);
-        mRightSparkMax2 = new CANSparkMax(RobotMap.RIGHTMOTOR_2, MotorType.kBrushless);
-        mLeftSparkMaxGroup = new SparkMaxGroup(Constants.kGains_Velocity, mLeftSparkMax1, mLeftSparkMax2);
-        mRightSparkMaxGroup =  new SparkMaxGroup(Constants.kGains_Velocity, mRightSparkMax1, mRightSparkMax2);
+    public DriveSubsystem(){   
+        mLeft1 = new CANSparkMax(1, MotorType.kBrushless);
+        mLeft2 = new CANSparkMax(2, MotorType.kBrushless);
+        mLeft1.restoreFactoryDefaults();
+        mLeft2.restoreFactoryDefaults();
+        mLeft1.enableVoltageCompensation(12);
+        mLeft2.enableVoltageCompensation(12);
+        mLeft1.setIdleMode(IdleMode.kBrake);
+        mLeft2.setIdleMode(IdleMode.kBrake);
+        mLeft2.follow(mLeft1);
 
-        differentialDrive = new DifferentialDrive(
-            mLeftSparkMaxGroup, mRightSparkMaxGroup
-            );
-        differentialDrive.setSafetyEnabled(false);
+        /**
+         * In order to use PID functionality for a controller, a CANPIDController object
+         * is constructed by calling the getPIDController() method on an existing
+         * CANSparkMax object
+         */
+        m_pidController = mLeft1.getPIDController();
+
+        // Encoder object created to display position values
+        m_encoder = mLeft1.getEncoder();
+
+        // PID coefficients
+        kP = 0.0006; 
+        kI = 0;
+        kD = 0; 
+        kIz = 0; 
+        kFF = 0; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+
+        // set PID coefficients
+        m_pidController.setP(kP);
+        m_pidController.setI(kI);
+        m_pidController.setD(kD);
+        m_pidController.setIZone(kIz);
+        m_pidController.setFF(kFF);
+        m_pidController.setOutputRange(kMinOutput, kMaxOutput);
     }
 
-    /**
-     * Set if the drive base should behave in closed loop control or
-     * open loop control
-     * Basically if pid is running or not
-     * @param closedLoopControl
-     */
-    public void setClosedLoopControl(boolean closedLoopControl)
-    {
-        mClosedLoopControl = closedLoopControl;
-        mLeftSparkMaxGroup.setBrakeMode(!mClosedLoopControl);
-        mRightSparkMaxGroup.setBrakeMode(!mClosedLoopControl);
+    public void arcadeDrive(double velocity, double heading) {
+        //this.differentialDrive.arcadeDrive(velocity, heading * .70, true);
     }
 
-    /**
-     * Arcade drive the robot
-     * @param velocity
-     * @param heading
-     */
-    public void arcadeDrive(double velocity, double heading)
+    public void updatePID()
     {
-        //Check that we are in open loop control be attempting to drive the robot
-        if (!mClosedLoopControl)
-        {
-            this.differentialDrive.arcadeDrive(velocity, heading * .70, true);
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+    
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { m_pidController.setP(p); kP = p; }
+        if((i != kI)) { m_pidController.setI(i); kI = i; }
+        if((d != kD)) { m_pidController.setD(d); kD = d; }
+        if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
+        if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
+        if((max != kMaxOutput) || (min != kMinOutput)) 
+        { 
+            m_pidController.setOutputRange(min, max); 
+            kMinOutput = min;
+            kMaxOutput = max; 
         }
     }
 
-    /**
-     * Set the set point of the left side of the drive base
-     * @param setPoint Command to set
-     */
-    public void setLeftVelocity(double setPoint)
+    public void setPidVelocitySetpoint(double setpoint)
     {
-        //Check that we are in closed loop control be attempting to set the set point
-        if (mClosedLoopControl)
-        {
-            mLeftSparkMaxGroup.setVelocity(setPoint);
-        }
+        m_pidController.setReference(setpoint, ControlType.kVelocity);
     }
 
-    /**
-     * Set the setpoint of the right side of the drive base
-     * @param setPoint
-     */
-    public void setRightVelocity(double setPoint)
-    {
-        //Check that we are in closed loop control be attempting to set the set point
-        if (mClosedLoopControl)
-        {
-            mLeftSparkMaxGroup.setVelocity(setPoint);
-        }
-    }
-
-    /**
-     * Get the velocity of the left side of the drive base
-     * @return Velocity of the left side
-     */
     public double leftVelocity()
     {
-        return mLeftSparkMaxGroup.getVelocity();
+        return m_encoder.getVelocity();
     }
 
-    /**
-     * get the velocity of the right side of the drive base
-     * @return Velocity of the right side
-     */
     public double rightVelocity()
     {
-        return mRightSparkMaxGroup.getVelocity();
+        //return mRightEncoder.getVelocity();
+        return 0.0;
     }
 
     @Override
-    public void initDefaultCommand()
-    {
+  public void initDefaultCommand() {
       
-    }
+  }
 }

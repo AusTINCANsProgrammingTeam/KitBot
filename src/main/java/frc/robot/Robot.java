@@ -49,10 +49,10 @@ public class Robot extends TimedRobot {
     mOI = new OI();
 
     //Set the drive base to be in closed loop mode     
-    mDriveSubsystem.setClosedLoopControl(true);
+    //mDriveSubsystem.setClosedLoopControl(true);
 
     //Bind the joy stick buttons to the respective commands
-    mOI.buttonOne.toggleWhenPressed(new RunVelocity(1000, 5));
+    mOI.buttonOne.toggleWhenPressed(new RunVelocity(2500, 5));
   }
 
   /**
@@ -65,8 +65,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Velocity", -1 * mDriveSubsystem.leftVelocity());    
-    SmartDashboard.putNumber("Right Velocity", 1 * mDriveSubsystem.rightVelocity());
+    SmartDashboard.putNumber("Left Velocity", 1 * mDriveSubsystem.leftVelocity());    
+    SmartDashboard.putNumber("Right Velocity", -1 * mDriveSubsystem.rightVelocity());
   }
 
   /**

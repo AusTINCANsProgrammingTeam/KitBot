@@ -9,7 +9,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.Joystick;
-import frc.robot.subsystems.SparkMaxGroup;
 import frc.robot.RobotMap;
 import frc.robot.Robot;
 import com.revrobotics.ControlType;
@@ -23,7 +22,7 @@ public class DriveCommand extends Command {
     public Joystick joystick = new Joystick(RobotMap.joystick);
   public DriveCommand() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveSubsystem);
+    requires(Robot.mDriveSubsystem);
   }
 
   // Called just before this Command runs the first time
@@ -34,7 +33,7 @@ public class DriveCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-      Robot.driveSubsystem.arcadeDrive(joystick.getRawAxis(1), joystick.getRawAxis(2));
+      Robot.mDriveSubsystem.arcadeDrive(joystick.getRawAxis(1), joystick.getRawAxis(2));
   }
 
   // Make this return true when this Command no longer needs to run execute()
