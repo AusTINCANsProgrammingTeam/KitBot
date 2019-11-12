@@ -29,30 +29,45 @@ public class DriveSubsystem extends Subsystem{
 
     private CANSparkMax mLeft1;
     private CANSparkMax mLeft2;
-    private CANPIDController m_pidController;
-    private CANEncoder m_encoder;
+    private CANSparkMax mRight1;
+    private CANSparkMax mRight2;
+    private CANPIDController l_pidController;
+    private CANPIDController r_pidController;
+    private CANEncoder l_encoder;
+    private CANEncoder r_encoder;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
 
     public DriveSubsystem(){   
         mLeft1 = new CANSparkMax(1, MotorType.kBrushless);
         mLeft2 = new CANSparkMax(2, MotorType.kBrushless);
+        mRight1 = new CANSparkMax(3, MotorType.kBrushless);
+        mRight2 = new CANSparkMax(4, MotorType.kBrushless);
         mLeft1.restoreFactoryDefaults();
         mLeft2.restoreFactoryDefaults();
+        mRight1.restoreFactoryDefaults();
+        mRight2.restoreFactoryDefaults();
         mLeft1.enableVoltageCompensation(12);
         mLeft2.enableVoltageCompensation(12);
+        mRight1.enableVoltageCompensation(12);
+        mRight2.enableVoltageCompensation(12);
         mLeft1.setIdleMode(IdleMode.kBrake);
         mLeft2.setIdleMode(IdleMode.kBrake);
+        mRight1.setIdleMode(IdleMode.kBrake);
+        mRight2.setIdleMode(IdleMode.kBrake);
         mLeft2.follow(mLeft1);
+        mRight2.follow(mRight1);
 
         /**
          * In order to use PID functionality for a controller, a CANPIDController object
          * is constructed by calling the getPIDController() method on an existing
          * CANSparkMax object
          */
-        m_pidController = mLeft1.getPIDController();
+        l_pidController = mLeft1.getPIDController();
+        r_pidController = mRight1.getPIDController();
 
         // Encoder object created to display position values
-        m_encoder = mLeft1.getEncoder();
+        l_encoder = mLeft1.getEncoder();
+        r_encoder = mLeft1.getEncoder();
 
         // PID coefficients
         kP = 0.0006; 
@@ -64,12 +79,18 @@ public class DriveSubsystem extends Subsystem{
         kMinOutput = -1;
 
         // set PID coefficients
-        m_pidController.setP(kP);
-        m_pidController.setI(kI);
-        m_pidController.setD(kD);
-        m_pidController.setIZone(kIz);
-        m_pidController.setFF(kFF);
-        m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+        l_pidController.setP(kP);
+        l_pidController.setI(kI);
+        l_pidController.setD(kD);
+        l_pidController.setIZone(kIz);
+        l_pidController.setFF(kFF);
+        l_pidController.setOutputRange(kMinOutput, kMaxOutput);
+        r_pidController.setP(kP);
+        r_pidController.setI(kI);
+        r_pidController.setD(kD);
+        r_pidController.setIZone(kIz);
+        r_pidController.setFF(kFF);
+        r_pidController.setOutputRange(kMinOutput, kMaxOutput);
     }
 
     public void arcadeDrive(double velocity, double heading) {
@@ -87,33 +108,37 @@ public class DriveSubsystem extends Subsystem{
         double min = SmartDashboard.getNumber("Min Output", 0);
     
         // if PID coefficients on SmartDashboard have changed, write new values to controller
-        if((p != kP)) { m_pidController.setP(p); kP = p; }
-        if((i != kI)) { m_pidController.setI(i); kI = i; }
-        if((d != kD)) { m_pidController.setD(d); kD = d; }
-        if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
-        if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
-        if((max != kMaxOutput) || (min != kMinOutput)) 
+        // if((p != kP)) { m_pidController.setP(p); kP = p; }
+        // if((i != kI)) { m_pidController.setI(i); kI = i; }
+        // if((d != kD)) { m_pidController.setD(d); kD = d; }
+        // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
+        // if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
+        // if((max != kMaxOutput) || (min != kMinOutput)) 
         { 
-            m_pidController.setOutputRange(min, max); 
-            kMinOutput = min;
-            kMaxOutput = max; 
+            // m_pidController.setOutputRange(min, max); 
+            // kMinOutput = min;
+            // kMaxOutput = max; 
         }
     }
 
-    public void setPidVelocitySetpoint(double setpoint)
+    public void setLeftPidVelocitySetpoint(double setpoint)
     {
-        m_pidController.setReference(setpoint, ControlType.kVelocity);
+        l_pidController.setReference(setpoint, ControlType.kVelocity);
+    }
+
+    public void setRightPidVelocitySetpoint(double setpoint)
+    {
+        r_pidController.setReference(setpoint, ControlType.kVelocity);
     }
 
     public double leftVelocity()
     {
-        return m_encoder.getVelocity();
+        return l_encoder.getVelocity();
     }
 
     public double rightVelocity()
     {
-        //return mRightEncoder.getVelocity();
-        return 0.0;
+        return r_encoder.getVelocity();
     }
 
     @Override

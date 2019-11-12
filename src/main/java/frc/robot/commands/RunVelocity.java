@@ -34,7 +34,7 @@ public class RunVelocity extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.mDriveSubsystem.setPidVelocitySetpoint(velocity);
+    Robot.mDriveSubsystem.setLeftPidVelocitySetpoint(velocity);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -47,7 +47,7 @@ public class RunVelocity extends Command {
   @Override
   protected void end() {
     //Zero the velocity
-    Robot.mDriveSubsystem.setPidVelocitySetpoint(0);
+    Robot.mDriveSubsystem.setLeftPidVelocitySetpoint(0);
   }
 
   // Called when another command which requires one or more of the same

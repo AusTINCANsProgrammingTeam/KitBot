@@ -21,6 +21,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.commands.RunPath;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import frc.robot.Path;
 
 import java.util.logging.*;
 
@@ -35,6 +40,11 @@ import java.util.logging.*;
 public class Robot extends TimedRobot {
   public static OI mOI;
   public static DriveSubsystem mDriveSubsystem;
+  public static ArrayList leftArray;
+  public static ArrayList rightArray;
+  public static Path path;
+  private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
+
 
   Command mAutonomousCommand;
   SendableChooser<Command> mChooser = new SendableChooser<>();
@@ -44,15 +54,23 @@ public class Robot extends TimedRobot {
    * used for any initialization code.
    */
   @Override
-  public void robotInit() {
+  public void robotInit(){
     mDriveSubsystem = new DriveSubsystem();
     mOI = new OI();
+    path = new Path();
+    try{
+      rightArray = path.returnRightList();
+      leftArray = path.returnLeftList();
+    }
+    catch(IOException e){
+      LOGGER.warning("real really test");
+    }
 
     //Set the drive base to be in closed loop mode     
     //mDriveSubsystem.setClosedLoopControl(true);
 
     //Bind the joy stick buttons to the respective commands
-    mOI.buttonOne.toggleWhenPressed(new RunVelocity(2500, 5));
+    mOI.buttonOne.toggleWhenPressed(new RunPath(leftArray, rightArray));
   }
 
   /**
