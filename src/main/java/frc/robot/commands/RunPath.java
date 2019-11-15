@@ -33,6 +33,7 @@ public class RunPath extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    i=0;
     // timer.reset();
     // timer.start();
   }
@@ -40,8 +41,8 @@ public class RunPath extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.mDriveSubsystem.setLeftPidVelocitySetpoint(Double.valueOf(leftPath.get(i).toString()));
-    Robot.mDriveSubsystem.setRightPidVelocitySetpoint(Double.valueOf(rightPath.get(i).toString()));
+    Robot.mDriveSubsystem.setLeftPidVelocitySetpoint(-1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())));
+    Robot.mDriveSubsystem.setRightPidVelocitySetpoint(Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(rightPath.get(i).toString())));
     i++;
 }
 

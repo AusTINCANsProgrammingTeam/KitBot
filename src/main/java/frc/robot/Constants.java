@@ -13,10 +13,12 @@ public class Constants {
   public static final int kEncoderUnitsPerRotation = 51711;
   public static final int kTimeOutMs = 10;
   public static final double kNeutralDeadband = 0.001;
-  public static final double kMaxRpms = 5600;
+  public static final double kMaxRpms = 5700;
+  public static final double kGearRatio = 10.71;
+  public static final double kWheelCircumference = 18.84956;
 
   public final static Gains kGains_Velocity 
-  = new Gains(5e-5, 1e-6, 0.0, 0, 1, -1);
+  = new Gains(5e-5, 0, 0.0, 0, 1, -1);
 
   public final static int REMOTE_0 = 0;
   public final static int REMOTE_1 = 1;
@@ -32,4 +34,5 @@ public class Constants {
   public final static int kSlot_Turning = SLOT_1;
   public final static int kSlot_Velocity = SLOT_2;
   public final static int kSlot_MotProf = SLOT_3;
+
 }

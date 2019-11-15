@@ -141,6 +141,14 @@ public class DriveSubsystem extends Subsystem{
         return r_encoder.getVelocity();
     }
 
+    public double fpsToRPM(double fps){
+        fps = fps * 12;
+        fps = fps/Constants.kWheelCircumference;
+        fps = fps *60;
+        fps = fps*Constants.kGearRatio;
+        return fps;
+    }
+
     @Override
   public void initDefaultCommand() {
       
