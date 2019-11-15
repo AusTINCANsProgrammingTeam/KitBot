@@ -83,8 +83,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Velocity", 1 * mDriveSubsystem.leftVelocity());    
+    SmartDashboard.putNumber("Left Velocity", -1 * mDriveSubsystem.leftVelocity());    
     SmartDashboard.putNumber("Right Velocity", -1 * mDriveSubsystem.rightVelocity());
+    mDriveSubsystem.updatePID();
   }
 
   /**
