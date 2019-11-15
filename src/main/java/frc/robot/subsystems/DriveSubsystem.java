@@ -38,8 +38,8 @@ public class DriveSubsystem extends Subsystem{
         mLeft2 = new CANSparkMax(2, MotorType.kBrushless);
         mLeft1.restoreFactoryDefaults();
         mLeft2.restoreFactoryDefaults();
-        mLeft1.enableVoltageCompensation(12);
-        mLeft2.enableVoltageCompensation(12);
+        //mLeft1.enableVoltageCompensation(12);
+        //mLeft2.enableVoltageCompensation(12);
         mLeft1.setIdleMode(IdleMode.kBrake);
         mLeft2.setIdleMode(IdleMode.kBrake);
         mLeft2.follow(mLeft1);
@@ -56,8 +56,8 @@ public class DriveSubsystem extends Subsystem{
 
         // PID coefficients
         kP = 0.0006; 
-        kI = 0;
-        kD = 0; 
+        kI = 0.0000005;
+        kD = 0.00005; 
         kIz = 0; 
         kFF = 0; 
         kMaxOutput = 1; 
@@ -70,6 +70,15 @@ public class DriveSubsystem extends Subsystem{
         m_pidController.setIZone(kIz);
         m_pidController.setFF(kFF);
         m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+         // display PID coefficients on SmartDashboard
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
     }
 
     public void arcadeDrive(double velocity, double heading) {
@@ -92,7 +101,7 @@ public class DriveSubsystem extends Subsystem{
         if((d != kD)) { m_pidController.setD(d); kD = d; }
         if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
         if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
-        if((max != kMaxOutput) || (min != kMinOutput)) 
+        if((max != kMaxOutput) || (min != kMinOutput))         
         { 
             m_pidController.setOutputRange(min, max); 
             kMinOutput = min;
@@ -100,7 +109,7 @@ public class DriveSubsystem extends Subsystem{
         }
     }
 
-    public void setPidVelocitySetpoint(double setpoint)
+    public void setLeftVelocitySetpoint(double setpoint)
     {
         m_pidController.setReference(setpoint, ControlType.kVelocity);
     }

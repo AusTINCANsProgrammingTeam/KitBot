@@ -52,13 +52,13 @@ public class Robot extends TimedRobot {
     //mDriveSubsystem.setClosedLoopControl(true);
 
     //Bind the joy stick buttons to the respective commands
-    mOI.buttonOne.toggleWhenPressed(new RunVelocity(2500, 5));
+    mOI.buttonOne.toggleWhenPressed(new RunVelocity(2000, 10));
   }
 
   /**
    * This function is called every robot packet, no matter the mode. Use
    * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
+   * autonomous, teleoperated and test. 
    *
    * <p>This runs after the mode specific periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating.
@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     SmartDashboard.putNumber("Left Velocity", 1 * mDriveSubsystem.leftVelocity());    
     SmartDashboard.putNumber("Right Velocity", -1 * mDriveSubsystem.rightVelocity());
+    mDriveSubsystem.updatePID();
   }
 
   /**
@@ -76,6 +77,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+
   }
 
   @Override
