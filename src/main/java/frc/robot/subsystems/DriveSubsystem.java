@@ -70,9 +70,9 @@ public class DriveSubsystem extends Subsystem{
         r_encoder = mLeft1.getEncoder();
 
         // PID coefficients
-        kP = 0.0006; 
+        kP = 0.0008; 
         kI = 0;
-        kD = 0; 
+        kD = .0000; 
         kIz = 0; 
         kFF = 0; 
         kMaxOutput = 1; 
@@ -112,9 +112,12 @@ public class DriveSubsystem extends Subsystem{
         double min = SmartDashboard.getNumber("Min Output", 0);
     
         //if PID coefficients on SmartDashboard have changed, write new values to controller
-        if((p != kP)) { l_pidController.setP(p); r_pidController.setP(p); kP = p; }
-        if((i != kI)) { l_pidController.setI(i); r_pidController.setI(i); kI = i; }
-        if((d != kD)) { l_pidController.setD(d); r_pidController.setD(d); kD = d; }
+        if((p != kP)) { l_pidController.setP(p); r_pidController.setP(p); kP = p; 
+        LOGGER.warning("PID CHANGED");}
+        if((i != kI)) { l_pidController.setI(i); r_pidController.setI(i); kI = i; 
+        LOGGER.warning("PID CHANGED");}
+        if((d != kD)) { l_pidController.setD(d); r_pidController.setD(d); kD = d; 
+        LOGGER.warning(l_pidController.getD() +" D CHANGED");}
         // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
         // if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
         if((max != kMaxOutput) || (min != kMinOutput)) 

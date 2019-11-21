@@ -25,7 +25,7 @@ public class RunPath extends Command {
   public RunPath(List leftPath, List rightPath) {
     this.rightPath = rightPath;
     this.leftPath = leftPath;
-    timeToRun = .020;
+    timeToRun = .020 * (leftPath.size()-1);
     timer = new Timer();
     requires(Robot.mDriveSubsystem);
   }
@@ -34,23 +34,30 @@ public class RunPath extends Command {
   @Override
   protected void initialize() {
     i=0;
-    // timer.reset();
-    // timer.start();
+    timer.reset();
+    timer.start();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    //LOGGER.warning(timer.get() + "");
     Robot.mDriveSubsystem.setLeftPidVelocitySetpoint(-1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())));
     Robot.mDriveSubsystem.setRightPidVelocitySetpoint(Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(rightPath.get(i).toString())));
+    SmartDashboard.putNumber("Left Velocity Commanded", -1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())) );    
+    SmartDashboard.putNumber("Right Velocity Commanded", -1 -1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(rightPath.get(i).toString())));
     i++;
+    // if(Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())))
 }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    // return timer.get() >= timeToRun;
-    return i >= leftPath.size();
+    if(timer.get() >= timeToRun){
+      LOGGER.warning("" + i);
+    }
+    return timer.get() >= timeToRun;
+    //return i >= leftPath.size();
   }
 
   // Called once after isFinished returns true
