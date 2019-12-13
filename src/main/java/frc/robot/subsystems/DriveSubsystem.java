@@ -35,6 +35,7 @@ public class DriveSubsystem extends Subsystem{
     private CANPIDController r_pidController;
     private CANEncoder l_encoder;
     private CANEncoder r_encoder;
+    private DifferentialDrive differentialDrive;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
 
     public DriveSubsystem(){   
@@ -56,6 +57,7 @@ public class DriveSubsystem extends Subsystem{
         mRight2.setIdleMode(IdleMode.kBrake);
         mLeft2.follow(mLeft1);
         mRight2.follow(mRight1);
+        differentialDrive = new DifferentialDrive(mLeft1, mRight1);
 
         /**
          * In order to use PID functionality for a controller, a CANPIDController object
@@ -68,7 +70,7 @@ public class DriveSubsystem extends Subsystem{
         // Encoder object created to display position values
         l_encoder = mLeft1.getEncoder();
         r_encoder = mLeft1.getEncoder();
-
+        
         // PID coefficients
         kP = 0.0008; 
         kI = 0;
@@ -94,10 +96,11 @@ public class DriveSubsystem extends Subsystem{
         SmartDashboard.putNumber("P Gain", kP);
         SmartDashboard.putNumber("I Gain", kI);
         SmartDashboard.putNumber("D Gain", kD);
+        differentialDrive.setSafetyEnabled(false);
     }
 
     public void arcadeDrive(double velocity, double heading) {
-        //this.differentialDrive.arcadeDrive(velocity, heading * .70, true);
+       this.differentialDrive.arcadeDrive(velocity, heading * .70, true);
     }
 
     public void updatePID()

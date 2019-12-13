@@ -13,7 +13,7 @@ public class Path{
     public Path(){}    
 
     public ArrayList returnLeftList() throws IOException{
-            File file = new File("/paths/RookF6.left.pf1.csv");
+            File file = new File("/paths/goStraightYeet.left.pf1.csv");
             Scanner sc = new Scanner(file);
             String[] testArray;
         
@@ -27,7 +27,7 @@ public class Path{
     }
 
     public ArrayList returnRightList() throws IOException{
-        File file = new File("/paths/RookF6.right.pf1.csv");
+        File file = new File("/paths/goStraightYeet.right.pf1.csv");
         Scanner sc = new Scanner(file);
         String[] testArray;
         sc.next();

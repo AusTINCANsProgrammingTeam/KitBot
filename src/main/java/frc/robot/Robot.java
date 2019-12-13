@@ -15,6 +15,7 @@ import frc.robot.commands.DriveCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.RunVelocity;
+import frc.robot.commands.toggleOff;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.RobotMap;
 import com.revrobotics.CANSparkMax;
@@ -70,7 +71,8 @@ public class Robot extends TimedRobot {
     //mDriveSubsystem.setClosedLoopControl(true);
 
     //Bind the joy stick buttons to the respective commands
-    mOI.buttonOne.toggleWhenPressed(new RunPath(leftArray, rightArray));
+    mOI.buttonOne.whenPressed(new RunPath(leftArray, rightArray));
+    mOI.buttonTwo.whenPressed(new toggleOff());
   }
 
   /**
@@ -155,7 +157,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    Scheduler.getInstance().run();
+      Scheduler.getInstance().run();
   }
 
   /**

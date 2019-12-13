@@ -15,7 +15,7 @@ public class Constants {
   public static final double kNeutralDeadband = 0.001;
   public static final double kMaxRpms = 5700;
   public static final double kGearRatio = 10.71;
-  public static final double kWheelCircumference = 18.84956;
+  public static final double kWheelCircumference = Math.PI*6;
 
   public final static Gains kGains_Velocity 
   = new Gains(5e-5, 0, 0.0, 0, 1, -1);
@@ -35,4 +35,5 @@ public class Constants {
   public final static int kSlot_Velocity = SLOT_2;
   public final static int kSlot_MotProf = SLOT_3;
 
+  public static boolean onOrOff = false;
 }

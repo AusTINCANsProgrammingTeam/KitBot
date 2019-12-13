@@ -45,8 +45,8 @@ public class RunPath extends Command {
     //LOGGER.warning(timer.get() + "");
     Robot.mDriveSubsystem.setLeftPidVelocitySetpoint(-1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())));
     Robot.mDriveSubsystem.setRightPidVelocitySetpoint(Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(rightPath.get(i).toString())));
-    SmartDashboard.putNumber("Left Velocity Commanded", -1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())));    
-    SmartDashboard.putNumber("Right Velocity Commanded", -1 -1*Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(rightPath.get(i).toString())));
+    SmartDashboard.putNumber("Left Commanded Velocity", Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())));    
+    SmartDashboard.putNumber("Right Commanded Velocity", Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(rightPath.get(i).toString())));
     i++;
     // if(Robot.mDriveSubsystem.fpsToRPM(Double.valueOf(leftPath.get(i).toString())))
 }
